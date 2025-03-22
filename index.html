@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VATSIM EFS - Verbesserte Flugstrip-Management Anwendung für VATSIM.">
+    <title>VATSIM EFS - Verbesserte Version</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-gray-100">
+<header class="header-bar flex items-center bg-gray-800 p-4 gap-4 border-b border-gray-700" role="banner">
+    <div id="metarContainer" class="flex flex-col gap-1">
+        <h3 class="text-sm font-semibold">METAR</h3>
+        <p class="text-xs text-gray-400">Warte auf Eingabe [ICAO Code]</p>
+    </div>
+    <div class="input-group flex gap-2">
+        <input type="text" id="icaoInput" placeholder="ICAO eingeben"
+               class="px-3 py-1 bg-gray-700 rounded text-sm w-40 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button id="btnGetMetar" class="px-3 py-1 bg-green-600 rounded text-sm hover:bg-green-500 transition-colors">
+            METAR abrufen
+        </button>
+        <div class="search-container flex flex-col gap-4">
+            <h3 class="text-sm font-semibold">Find Callsign</h3>
+            <input type="text" id="callsignSearch" placeholder="Callsign suchen…"
+                   class="px-3 py-1 bg-gray-700 rounded text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+    </div>
+</header>
+
+<main id="main-container" class="efs-container grid gap-2 p-4 h-[calc(100vh-140px)]">
+    <!-- Arrivals Section -->
+    <section class="bay flex flex-col gap-2" id="arrivals-bay">
+        <h3 class="text-sm font-semibold text-gray-300">Arrivals</h3>
+        <div class="bay-section flex flex-col gap-2" id="arrivals">
+            <!-- Flight strips will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <!-- Pushback Section -->
+    <section class="bay flex flex-col gap-2" id="pushback-bay">
+        <h3 class="text-sm font-semibold text-gray-300">Start Up / Pushback</h3>
+        <div class="bay-section flex flex-col gap-2" id="pushback">
+            <!-- Flight strips will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <!-- Taxi Section -->
+    <section class="bay flex flex-col gap-2" id="taxi-bay">
+        <h3 class="text-sm font-semibold text-gray-300">Taxi</h3>
+        <div class="bay-section flex flex-col gap-2" id="taxi">
+            <!-- Flight strips will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <!-- Pending Departures Section -->
+    <section class="bay flex flex-col gap-2" id="departures-bay">
+        <h3 class="text-sm font-semibold text-gray-300">Pending Departures</h3>
+        <div class="bay-section flex flex-col gap-2" id="departures">
+            <!-- Flight strips will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <!-- Cleared Departures Section -->
+    <section class="bay flex flex-col gap-2" id="cleared-departures-bay">
+        <h3 class="text-sm font-semibold text-gray-300">Cleared Departures</h3>
+        <div class="bay-section flex flex-col gap-2" id="cleared-departures">
+            <!-- Flight strips will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <!-- Runway 11/29 Departures Section -->
+    <section class="bay flex flex-col gap-2" id="rwy-1129-departures-bay">
+        <h3 class="text-sm font-semibold text-gray-300">Runway 11/29</h3>
+        <div class="bay-section flex flex-col gap-2" id="rwy-1129-departures">
+            <!-- Flight strips will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <!-- Runway 16/34 Departures Section -->
+    <section class="bay flex flex-col gap-2" id="rwy-1634-departures-bay">
+        <h3 class="text-sm font-semibold text-gray-300">Runway 16/34</h3>
+        <div class="bay-section flex flex-col gap-2" id="rwy-1634-departures">
+            <!-- Flight strips will be dynamically inserted here -->
+        </div>
+    </section>
+
+    <!-- Airborne Section -->
+    <section class="bay flex flex-col gap-2" id="airborne-bay">
+        <h3 class="text-sm font-semibold text-gray-300">Airborne</h3>
+        <div class="bay-section flex flex-col gap-2" id="airborne">
+            <!-- Flight strips will be dynamically inserted here -->
+        </div>
+    </section>
+</main>
+
+<footer class="footer-bar flex items-center justify-between px-4 py-2 bg-gray-800 border-t border-gray-700 fixed bottom-0 w-full">
+    <div class="btn-group flex gap-2">
+        <button id="btnDlv" class="px-3 py-1 bg-green-600 rounded text-sm hover:bg-green-500 transition-colors">DLV</button>
+        <button id="btnGnd" class="px-3 py-1 bg-green-600 rounded text-sm hover:bg-green-500 transition-colors">GND</button>
+        <button id="btnTwr" class="px-3 py-1 bg-green-600 rounded text-sm hover:bg-green-500 transition-colors">TWR</button>
+        <button id="btnPlus" class="px-3 py-1 bg-blue-600 rounded text-sm hover:bg-blue-500 transition-colors">Add FPL</button>
+    </div>
+    <div class="clock-container flex items-center gap-2">
+        <button id="btnToggleTime" class="px-3 py-1 bg-gray-700 rounded text-sm hover:bg-gray-600 transition-colors">UTC</button>
+        <span id="clock" class="font-mono text-sm">00:00:00</span>
+    </div>
+</footer>
+
+<!-- JavaScript -->
+<script src="index.js"></script>
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
