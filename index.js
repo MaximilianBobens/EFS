@@ -325,4 +325,5 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("btnToggleTime").textContent = useUTC ? "UTC" : "LOCAL";
         updateClock();
     }
+    
 });
