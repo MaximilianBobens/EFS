@@ -84,29 +84,48 @@ document.addEventListener("DOMContentLoaded", () => {
         metarContainer.innerHTML = `<h3>METAR für ${icao}</h3><pre>${metar}</pre>`;
     }
 
-    function updateFlightStrips(pilots) {
-        const newState = {};
-        pilots.forEach(pilot => {
-            if (!pilot.flight_plan) return;
+function updateFlightStrips(pilots) {
+    // Schritt 1: Neue Ankünfte und Abflüge in currentState aufnehmen
+    pilots.forEach(pilot => {
+        if (!pilot.flight_plan) return;
+        const distance = calculateDistance(pilot.latitude, pilot.longitude, 48.1103, 16.5697); // LOWW-Koordinaten
+        if (pilot.flight_plan.arrival === "LOWW" && distance <= 10) {
+            if (!currentState[pilot.callsign]) {
+                currentState[pilot.callsign] = "arrivals";
+            }
+        } else if (pilot.flight_plan.departure === "LOWW") {
+            if (!currentState[pilot.callsign]) {
+                currentState[pilot.callsign] = "departures";
+            }
+        }
+    });
+
+    // Schritt 2: Flugstreifen für Einträge in currentState hinzufügen, die noch nicht im DOM sind
+    Object.keys(currentState).forEach(callsign => {
+        if (!document.querySelector(`.flight-strip[data-callsign="${callsign}"]`)) {
+            const pilot = pilots.find(p => p.callsign === callsign);
+            if (pilot) {
+                addFlightStrip(pilot, currentState[callsign]);
+            }
+        }
+    });
+
+    // Schritt 3: Abflüge im "airborne"-Status entfernen, wenn Entfernung > 2 nm
+    pilots.forEach(pilot => {
+        if (currentState[pilot.callsign] === "airborne" && 
+            pilot.flight_plan && 
+            pilot.flight_plan.departure === "LOWW") {
             const distance = calculateDistance(pilot.latitude, pilot.longitude, 48.1103, 16.5697);
-            if (pilot.flight_plan.arrival === "LOWW" && distance <= 12) {
-                newState[pilot.callsign] = currentState[pilot.callsign] || "arrivals";
-            } else if (pilot.flight_plan.departure === "LOWW") {
-                newState[pilot.callsign] = currentState[pilot.callsign] || "departures";
-            }
-        });
-
-        Object.keys(newState).forEach(callsign => {
-            if (!document.querySelector(`.flight-strip[data-callsign="${callsign}"]`)) {
-                const pilot = pilots.find(p => p.callsign === callsign);
-                if (pilot) {
-                    addFlightStrip(pilot, newState[callsign]);
+            if (distance > 2) {
+                const strip = document.querySelector(`.flight-strip[data-callsign="${pilot.callsign}"]`);
+                if (strip) {
+                    strip.remove();
                 }
+                delete currentState[pilot.callsign];
             }
-        });
-
-        Object.assign(currentState, newState);
-    }
+        }
+    });
+}
 
     async function addFlightStrip(pilot, sectionId) {
         const strip = document.createElement("div");
